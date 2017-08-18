@@ -1,0 +1,76 @@
+网络加速app代码地址：http://svn03.tclking.com/svn/applications/trunk/java/apps/Triava 
+网络感知app代码地址：https://10.120.99.223/svn/Triava_MS828   http://SVN-SERVER11.tclking.com/svn/Triava_MS828/
+
+网络感知c代码地址：http://10.120.99.223/svn/tcp_monitor/trunk       svn账号： zhouguoqiang/zhouguoqiang
+网络加速c代码地址：https://10.120.16.113/svn/SR_Triava/trunk          svn账号： zhouguoqiang/zhouguoqiang
+ 
+一、编译服务器
+   10.120.199.239 root/edc123456
+   自己创建账号
+ 
+二. 网络感知及网络加速MS828平台的编译环境
+10.120.199.239  ms938/ms938.123
+/home/ms938/MS828/SVN_MS828/branches/AndroidL_beta_64bit_MS828C1_20160413_svn5852
+source /opt/buildScript/JDK1.7/initPath.sh
+. build/envsetup.sh
+lunch 16　　　　　　
+//选择16. aosp_coconut_c1-userdebug
+ 
+ 
+三、测试重点
+1. 网络感知
+1.1 MS828平台重点测试数据上报是否正常, 卡顿时间统计是否准确。功能测试及考机测试。 通过log(看上报是否准确)和tcpdump（查看上报的数据）. 
+1.2 其他平台，测试是否出现加速崩溃信息， 有无数据上报。功能测试及考机测试.
+1.3 MS828平台。apk升级测试。  编译出来的是一个单独的apk. 能够通过pm install -r /data/Triava.apk
+ 
+2. 网络加速(Triava/TriavaLoad.sh)
+1.1 重点测试MS838C。 加速功能是否正常，加速开关是否起作用. 
+a. 测试加速开关        开关地址: http://112.74.107.190:3100/
+   后台加速开关地址： 关闭，重启或者STR开机，无加速。iptables -t nat -L
+   后台加速开关地址： 开启，重启或者STR开机，有加速。iptables -t nat -L
+b. 对比测试加速效果。 只教会测试部测试B项即可。 测试部： busybox netstat -natp |grep    Triava
+    1）两个路由器，上一级限速。 第二级接两个对比电视。
+    2） cd /data/
+      mv Triava Triava.bak
+c. 其他MS828无加速(MS938, T968)
+
+
+三、查看apk版本号码
+dumpsys package com.tcl.triava |grep version
+
+四、 apk安装
+chmod 777 /data/Triava.apk  
+
+打开install限制
+getprop |grep install
+setprop persist.tcl.installapk.enable 1
+setprop persist.tcl.debug.installapk 1 
+
+五、查看log
+查看apk log
+logcat -s Triava
+
+查看网络加速log
+logcat -s Triava_server
+
+
+六、启动对腾讯视频加速
+修改/data/Triava/TriavaLoad.sh      
+export HTTP_PROXYS=http://com.tcl.vod:root@127.0.0.1:8118
+
+7. 网络加速下载数据
+root@almond:/data/Triava # busybox netstat -natp |grep Triava                  
+tcp        0      0 127.0.0.1:8118          0.0.0.0:*               LISTEN      14485/Triava
+tcp        0      0 127.0.0.1:12345         0.0.0.0:*               LISTEN      14511/Triava
+tcp        0      0 192.168.1.100:47585     183.60.23.14:80         ESTABLISHED 14485/Triava
+
+8. tcpdump 
+tcpdump -i any  -s0 -w report.cap
+tcpdump -i any port 8000 -s0 -w report.cap
+
+
+
+
+
+
+

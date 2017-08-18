@@ -1,0 +1,4 @@
+47.89.15.28  root/edc123456
+/root/relay_server/tcptunnel_pc 
+
+./tcptunnel_pc -s -l 47.89.15.28:9090 -c 47.89.15.28:8080 ¨Cv
